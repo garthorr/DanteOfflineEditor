@@ -6,6 +6,7 @@ let xmlDoc = null
 let devices = []        // parsed device objects
 let currentFilePath = null
 let isDirty = false
+let fileHandle = null   // FileSystemFileHandle (File System Access API), if available
 
 // ── XML Parsing ───────────────────────────────────────────────────────────────
 
@@ -406,17 +407,39 @@ function markDirty(dirty) {
 // ── File operations ───────────────────────────────────────────────────────────
 
 async function openFile() {
-  const result = await window.electronAPI.openFile()
-  if (!result) return
+  if (window.showOpenFilePicker) {
+    try {
+      const [handle] = await window.showOpenFilePicker({
+        types: [{ description: 'Dante Preset', accept: { 'text/xml': ['.xml'] } }]
+      })
+      fileHandle = handle
+      const file = await handle.getFile()
+      await loadContent(file.name, await file.text())
+      return
+    } catch (e) {
+      if (e.name === 'AbortError') return
+      // fall through to input fallback
+    }
+  }
+  document.getElementById('file-input').click()
+}
 
+async function handleFileInputChange(e) {
+  const file = e.target.files[0]
+  if (!file) return
+  fileHandle = null
+  await loadContent(file.name, await file.text())
+  e.target.value = ''
+}
+
+async function loadContent(fileName, content) {
   try {
-    xmlDoc = parseXML(result.content)
+    xmlDoc = parseXML(content)
     devices = extractDevices(xmlDoc)
-    currentFilePath = result.filePath
+    currentFilePath = fileName
 
-    const fileName = result.filePath.replace(/\\/g, '/').split('/').pop()
     document.getElementById('file-name').textContent = fileName
-    document.getElementById('file-name').title = result.filePath
+    document.getElementById('file-name').title = fileName
 
     const presetName = xmlDoc.querySelector('preset > name')?.textContent || ''
     const presetDesc = xmlDoc.querySelector('preset > description')?.textContent || ''
@@ -437,15 +460,48 @@ async function openFile() {
 async function saveFile(saveAs = false) {
   if (!xmlDoc) return
   const content = serializeXML(xmlDoc)
-  const path = saveAs ? null : currentFilePath
-  const saved = await window.electronAPI.saveFile({ filePath: path, content })
-  if (saved) {
-    currentFilePath = saved
-    const fileName = saved.replace(/\\/g, '/').split('/').pop()
-    document.getElementById('file-name').textContent = fileName
-    document.getElementById('file-name').title = saved
-    markDirty(false)
+  const suggestedName = currentFilePath || 'dante-preset.xml'
+
+  // In-place save via stored file handle (File System Access API)
+  if (!saveAs && fileHandle) {
+    try {
+      const perm = await fileHandle.queryPermission({ mode: 'readwrite' })
+      if (perm !== 'granted') await fileHandle.requestPermission({ mode: 'readwrite' })
+      const writable = await fileHandle.createWritable()
+      await writable.write(content)
+      await writable.close()
+      markDirty(false)
+      return
+    } catch (_) { /* fall through */ }
   }
+
+  // Save dialog via File System Access API (Chrome/Edge)
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName,
+        types: [{ description: 'Dante Preset', accept: { 'text/xml': ['.xml'] } }]
+      })
+      const writable = await handle.createWritable()
+      await writable.write(content)
+      await writable.close()
+      fileHandle = handle
+      markDirty(false)
+      return
+    } catch (e) {
+      if (e.name === 'AbortError') return
+    }
+  }
+
+  // Fallback: trigger browser download
+  const blob = new Blob([content], { type: 'text/xml' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = suggestedName
+  a.click()
+  URL.revokeObjectURL(url)
+  markDirty(false)
 }
 
 // ── Event wiring ──────────────────────────────────────────────────────────────
@@ -454,8 +510,19 @@ document.getElementById('btn-open').addEventListener('click', openFile)
 document.getElementById('btn-open-large').addEventListener('click', openFile)
 document.getElementById('btn-save').addEventListener('click', () => saveFile(false))
 document.getElementById('btn-save-as').addEventListener('click', () => saveFile(true))
+document.getElementById('file-input').addEventListener('change', handleFileInputChange)
 
-// Menu shortcuts from main process
-window.electronAPI.onMenuOpen(() => openFile())
-window.electronAPI.onMenuSave(() => saveFile(false))
-window.electronAPI.onMenuSaveAs(() => saveFile(true))
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  const mod = e.metaKey || e.ctrlKey
+  if (mod && e.key === 'o') { e.preventDefault(); openFile() }
+  if (mod && !e.shiftKey && e.key === 's') { e.preventDefault(); saveFile(false) }
+  if (mod && e.shiftKey && e.key === 'S') { e.preventDefault(); saveFile(true) }
+})
+
+// Electron menu integration (when running under Electron)
+if (window.electronAPI) {
+  window.electronAPI.onMenuOpen(() => openFile())
+  window.electronAPI.onMenuSave(() => saveFile(false))
+  window.electronAPI.onMenuSaveAs(() => saveFile(true))
+}
