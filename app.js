@@ -407,7 +407,9 @@ function markDirty(dirty) {
 // ── File operations ───────────────────────────────────────────────────────────
 
 async function openFile() {
-  if (window.showOpenFilePicker) {
+  // showOpenFilePicker is blocked on file:// origins; use the input directly so
+  // the click happens synchronously within the user gesture.
+  if (window.showOpenFilePicker && location.protocol !== 'file:') {
     try {
       const [handle] = await window.showOpenFilePicker({
         types: [{ description: 'Dante Preset', accept: { 'text/xml': ['.xml'] } }]
@@ -475,8 +477,8 @@ async function saveFile(saveAs = false) {
     } catch (_) { /* fall through */ }
   }
 
-  // Save dialog via File System Access API (Chrome/Edge)
-  if (window.showSaveFilePicker) {
+  // Save dialog via File System Access API (Chrome/Edge, https:// only)
+  if (window.showSaveFilePicker && location.protocol !== 'file:') {
     try {
       const handle = await window.showSaveFilePicker({
         suggestedName,
