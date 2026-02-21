@@ -1,0 +1,12 @@
+{
+  "name": "dante-offline-editor",
+  "version": "1.0.0",
+  "description": "Offline Dante XML preset patch editor",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^33.0.0"
+  }
+}
