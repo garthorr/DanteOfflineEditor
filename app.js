@@ -406,24 +406,27 @@ function markDirty(dirty) {
 
 // ── File operations ───────────────────────────────────────────────────────────
 
-async function openFile() {
-  // showOpenFilePicker is blocked on file:// origins; use the input directly so
-  // the click happens synchronously within the user gesture.
+function openFile() {
+  // Must be synchronous — Safari only allows file-input.click() from a
+  // synchronous user gesture handler. async functions lose that context.
   if (window.showOpenFilePicker && location.protocol !== 'file:') {
-    try {
-      const [handle] = await window.showOpenFilePicker({
-        types: [{ description: 'Dante Preset', accept: { 'text/xml': ['.xml'] } }]
-      })
-      fileHandle = handle
-      const file = await handle.getFile()
-      await loadContent(file.name, await file.text())
-      return
-    } catch (e) {
-      if (e.name === 'AbortError') return
-      // fall through to input fallback
-    }
+    _openWithPicker()
+    return
   }
   document.getElementById('file-input').click()
+}
+
+async function _openWithPicker() {
+  try {
+    const [handle] = await window.showOpenFilePicker({
+      types: [{ description: 'Dante Preset', accept: { 'text/xml': ['.xml'] } }]
+    })
+    fileHandle = handle
+    const file = await handle.getFile()
+    await loadContent(file.name, await file.text())
+  } catch (e) {
+    if (e.name !== 'AbortError') document.getElementById('file-input').click()
+  }
 }
 
 async function handleFileInputChange(e) {
