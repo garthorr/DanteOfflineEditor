@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <preset version="2.1.0">
-<name>LHC Sanctuary Dante Patch 2026.02.08</name>
+<name>Example Venue Dante Patch 2026.02.08</name>
 <description>Dante Controller preset</description>
 <device>
 <name>S-STGL-MXWANI8</name>
-<default_name>MXWANI8-f0787b</default_name>
+<default_name>MXWANI8-000001</default_name>
 <instance_id>
-<device_id>000EDDF0787B0000</device_id>
+<device_id>000EDD0000010000</device_id>
 <process_id>0</process_id>
 </instance_id>
 <manufacturer_id>5368757265000000</manufacturer_id>
@@ -72,9 +72,9 @@
 </device>
 <device>
 <name>S-VID-DesktopDVS</name>
-<default_name>DESKTOP-A7AU7E9</default_name>
+<default_name>Windows-DVS</default_name>
 <instance_id>
-<device_id>A4BB6DFFFEB7969C</device_id>
+<device_id>AABBCDFFFE000001</device_id>
 <process_id>0</process_id>
 </instance_id>
 <manufacturer_id>417564696E617465</manufacturer_id>
@@ -108,10 +108,10 @@
 </rxchannel>
 </device>
 <device>
-<name>SBs-iMac</name>
-<default_name>SBs-iMac</default_name>
+<name>MacBook-DVS</name>
+<default_name>MacBook-DVS</default_name>
 <instance_id>
-<device_id>C8A362FFFEB24AB1</device_id>
+<device_id>AABBCDFFFE000002</device_id>
 <process_id>0</process_id>
 </instance_id>
 <manufacturer_id>417564696E617465</manufacturer_id>
@@ -122,7 +122,7 @@
 <model_version_string>4.5.1.1</model_version_string>
 <device_type>4476734D61630000</device_type>
 <device_type_string>Dante Virtual Soundcard macOS</device_type_string>
-<friendly_name>SBs-iMac</friendly_name>
+<friendly_name>MacBook-DVS</friendly_name>
 <clock_pullup value="0"/>
 <samplerate>48000</samplerate>
 <encoding>24</encoding>
@@ -517,10 +517,10 @@
 </rxchannel>
 </device>
 <device>
-<name>TesiraForte03232198-DAN</name>
-<default_name>BIAMP-119a24</default_name>
+<name>TesiraForte00000000-DAN</name>
+<default_name>BIAMP-000001</default_name>
 <instance_id>
-<device_id>001DC1119A240000</device_id>
+<device_id>001DC10000010000</device_id>
 <process_id>0</process_id>
 </instance_id>
 <manufacturer_id>4269616D70000000</manufacturer_id>
@@ -530,7 +530,7 @@
 <model_version>1.3.0</model_version>
 <device_type>426B6C796E320000</device_type>
 <device_type_string>Brooklyn II</device_type_string>
-<friendly_name>TesiraForte03232198-DAN</friendly_name>
+<friendly_name>TesiraForte00000000-DAN</friendly_name>
 <switch_vlan value="1"/>
 <preferred_master value="false"/>
 <samplerate>48000</samplerate>
@@ -738,9 +738,9 @@
 </device>
 <device>
 <name>Y000--S-TF5</name>
-<default_name>BKLYN-II-1c4a52</default_name>
+<default_name>BKLYN-II-000002</default_name>
 <instance_id>
-<device_id>001DC11C4A520000</device_id>
+<device_id>001DC10000020000</device_id>
 <process_id>0</process_id>
 </instance_id>
 <manufacturer_id>59616D6168610000</manufacturer_id>
@@ -1206,9 +1206,9 @@
 </device>
 <device>
 <name>Y001-S-STGL-Tio1608</name>
-<default_name>BKLYN-II-1bc850</default_name>
+<default_name>BKLYN-II-000003</default_name>
 <instance_id>
-<device_id>001DC11BC8500000</device_id>
+<device_id>001DC10000030000</device_id>
 <process_id>0</process_id>
 </instance_id>
 <manufacturer_id>59616D6168610000</manufacturer_id>
@@ -1321,9 +1321,9 @@
 </device>
 <device>
 <name>Y002-S-STGR-Y002-Tio1608</name>
-<default_name>BKLYN-II-1bc896</default_name>
+<default_name>BKLYN-II-000004</default_name>
 <instance_id>
-<device_id>001DC11BC8960000</device_id>
+<device_id>001DC10000040000</device_id>
 <process_id>0</process_id>
 </instance_id>
 <manufacturer_id>59616D6168610000</manufacturer_id>
