@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <title>Dante Offline Editor</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="toolbar">
+    <button id="btn-open">Open XML</button>
+    <span id="file-name" title="">No file loaded</span>
+    <div id="toolbar-right">
+      <span id="status"></span>
+      <button id="btn-save" disabled>Save</button>
+      <button id="btn-save-as" disabled>Save As…</button>
+    </div>
+  </div>
+
+  <div id="preset-info" style="display:none">
+    <span id="preset-name"></span>
+    <span id="preset-desc"></span>
+  </div>
+
+  <div id="grid-container">
+    <div id="empty-state">
+      <div class="empty-icon">⬡</div>
+      <div class="empty-title">Dante Offline Editor</div>
+      <div class="empty-sub">Open a Dante Controller preset XML file to view and edit the patch</div>
+      <button id="btn-open-large">Open XML File</button>
+    </div>
+    <div id="grid-wrapper" style="display:none">
+      <table id="patch-grid"></table>
+    </div>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

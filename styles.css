@@ -1,0 +1,349 @@
+/* ── Reset & base ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #12121e;
+  --bg2:         #1a1a2e;
+  --bg3:         #1e2040;
+  --border:      #2a2a4a;
+  --border2:     #3a3a6a;
+  --accent:      #4a90d9;
+  --accent-dim:  #2a4a7a;
+  --dot:         #4a90d9;
+  --dot-hover:   #ff4a4a;
+  --text:        #d0d0e8;
+  --text-dim:    #7070a0;
+  --text-bright: #e8e8ff;
+  --header-h1:   32px;   /* device name header row height */
+  --header-h2:   100px;  /* tx channel label header row height */
+  --col-dev:     130px;  /* rx device name column width */
+  --col-rx:      90px;   /* rx channel name column width */
+  --cell:        28px;   /* patch cell width/height */
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 12px;
+  user-select: none;
+}
+
+/* ── Toolbar ──────────────────────────────────────────────── */
+#toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  height: 40px;
+}
+
+button {
+  padding: 4px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+button:hover:not(:disabled) { background: var(--accent-dim); border-color: var(--accent); }
+button:disabled { opacity: 0.35; cursor: default; }
+
+#file-name {
+  flex: 1;
+  color: var(--text-dim);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+#status {
+  font-size: 11px;
+  color: #e07060;
+  white-space: nowrap;
+}
+
+/* ── Preset info bar ──────────────────────────────────────── */
+#preset-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 12px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  height: 26px;
+  overflow: hidden;
+}
+#preset-name { color: var(--accent); font-weight: 600; }
+
+/* ── Grid container ───────────────────────────────────────── */
+#grid-container {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 40px - 26px);
+}
+
+#grid-wrapper {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+/* ── Empty state ──────────────────────────────────────────── */
+#empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  color: var(--text-dim);
+}
+.empty-icon { font-size: 48px; opacity: 0.3; }
+.empty-title { font-size: 20px; color: var(--text); font-weight: 500; }
+.empty-sub { font-size: 13px; }
+#btn-open-large {
+  margin-top: 8px;
+  padding: 8px 24px;
+  font-size: 14px;
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+#btn-open-large:hover { background: var(--accent); }
+
+/* ── Patch grid table ─────────────────────────────────────── */
+#patch-grid {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 11px;
+}
+
+/* ── Sticky corner cell (top-left, 2×2 span) ─────────────── */
+.corner-cell {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  background: var(--bg2);
+  border-right: 2px solid var(--border2);
+  border-bottom: 2px solid var(--border2);
+  min-width: calc(var(--col-dev) + var(--col-rx));
+  width: calc(var(--col-dev) + var(--col-rx));
+  height: calc(var(--header-h1) + var(--header-h2));
+  text-align: center;
+  vertical-align: bottom;
+  padding: 4px 8px;
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 10px;
+}
+.corner-cell .corner-label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  height: 100%;
+  padding-bottom: 2px;
+}
+.corner-label span { display: block; }
+.corner-diag {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+}
+
+/* ── TX device header (row 1 of thead) ───────────────────── */
+.tx-device-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  border-right: 2px solid var(--border2);
+  height: var(--header-h1);
+  padding: 0 6px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0; /* force overflow hidden on th with colspan */
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+/* ── TX channel label header (row 2 of thead) ────────────── */
+.tx-ch-header {
+  position: sticky;
+  top: var(--header-h1);
+  z-index: 30;
+  background: var(--bg2);
+  border-bottom: 2px solid var(--border2);
+  border-right: 1px solid var(--border);
+  width: var(--cell);
+  min-width: var(--cell);
+  max-width: var(--cell);
+  height: var(--header-h2);
+  padding: 4px 2px 2px;
+  vertical-align: bottom;
+  text-align: center;
+  cursor: default;
+}
+.tx-ch-header:hover { background: var(--bg3); }
+
+.tx-label-rotated {
+  display: block;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 88px;
+  font-size: 10px;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.tx-ch-header:hover .tx-label-rotated { color: var(--text); }
+
+/* TX label inline editor */
+.tx-label-input {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  width: 20px;
+  max-height: 88px;
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  color: var(--text-bright);
+  font-size: 10px;
+  padding: 2px;
+  outline: none;
+  display: none;
+}
+
+/* ── RX device name cell (sticky left column) ────────────── */
+.rx-dev-cell {
+  position: sticky;
+  left: 0;
+  z-index: 20;
+  background: var(--bg3);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  width: var(--col-dev);
+  min-width: var(--col-dev);
+  max-width: var(--col-dev);
+  padding: 0 6px;
+  vertical-align: middle;
+  text-align: center;
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── RX channel name cell (sticky second column) ─────────── */
+.rx-ch-cell {
+  position: sticky;
+  left: var(--col-dev);
+  z-index: 20;
+  background: var(--bg2);
+  border-right: 2px solid var(--border2);
+  border-bottom: 1px solid var(--border);
+  width: var(--col-rx);
+  min-width: var(--col-rx);
+  max-width: var(--col-rx);
+  padding: 0 6px;
+  vertical-align: middle;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  height: 22px;
+  font-size: 10px;
+}
+
+/* row height via rx cells */
+tbody tr { height: 22px; }
+
+/* device block separator */
+tbody tr.device-first-row .rx-dev-cell,
+tbody tr.device-first-row .rx-ch-cell,
+tbody tr.device-first-row .patch-cell {
+  border-top: 2px solid var(--border2);
+}
+
+/* ── Patch cells ──────────────────────────────────────────── */
+.patch-cell {
+  width: var(--cell);
+  min-width: var(--cell);
+  max-width: var(--cell);
+  height: 22px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 22px;
+  color: transparent;
+  transition: background 0.08s;
+}
+.patch-cell:hover { background: var(--accent-dim); }
+
+/* TX device column separator */
+.patch-cell.dev-last-col { border-right: 2px solid var(--border2); }
+
+.patch-cell.subscribed {
+  color: var(--dot);
+  background: rgba(74, 144, 217, 0.1);
+}
+.patch-cell.subscribed:hover {
+  color: var(--dot-hover);
+  background: rgba(255, 74, 74, 0.12);
+}
+
+/* Row highlight on hover */
+tbody tr:hover .rx-ch-cell { color: var(--text-bright); background: #1e2240; }
+tbody tr:hover .patch-cell:not(.subscribed) { background: #1a1a30; }
+
+/* ── Tooltip ──────────────────────────────────────────────── */
+#tooltip {
+  position: fixed;
+  z-index: 100;
+  background: #0a0a18;
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-size: 11px;
+  padding: 5px 9px;
+  border-radius: 4px;
+  pointer-events: none;
+  display: none;
+  white-space: nowrap;
+  max-width: 320px;
+  line-height: 1.6;
+}
