@@ -433,7 +433,15 @@ async function handleFileInputChange(e) {
   const file = e.target.files[0]
   if (!file) return
   fileHandle = null
-  await loadContent(file.name, await file.text())
+  const text = typeof file.text === 'function'
+    ? await file.text()
+    : await new Promise((res, rej) => {
+        const r = new FileReader()
+        r.onload = () => res(r.result)
+        r.onerror = () => rej(r.error)
+        r.readAsText(file)
+      })
+  await loadContent(file.name, text)
   e.target.value = ''
 }
 
